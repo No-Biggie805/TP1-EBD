@@ -1,0 +1,175 @@
+at the given block(see procedure below), it seems that after i had my member values atributed to the main linked list,
+working on a transport linked list, the procedure issues a seg fault, could you help with the issue in mind?
+I am using two different pointers in the main functions to also let you know..
+
+/*main.c*/
+Meios_t *head = NULL;
+Grafo_t *headGraph = NULL;
+...
+case 11:
+        {
+            system("clear");
+            printf("Vertices adjacentes a abc.def.ghi\n");
+            listarEdges(headGraph, "abc.def.ghi");
+            printf("\n");
+            printf("\n");
+
+            break;
+        }
+...        
+
+/*in meios.c*/
+...
+// função listar adjacentes, coordernadas do grafo.
+void listarEdges(Grafo_t *head, char vertice[])
+{
+    Adjacentes_t *aux;
+    if (existeVertice(head, vertice) != 0)
+    {
+        while (strcmp(head->vertice, vertice))
+            head = head->next;
+        aux = head->adjacents;
+        while (aux != NULL)
+        {
+            printf("Adjacente:%s Peso:%.2f\n", aux->vertice, aux->peso);
+            aux = aux->next;
+        }
+    }
+}
+...
+
+
+
+
+could you help me find how to add the CodeID from meios linked list to 
+graph linked list, considering that i already have the data from meios linked list already
+inserted before and then insert in the graph?
+
+void inserirMeio_GeoCode(Grafo_t *head, char geocodigo[], int CodeID)
+{
+    //  *temp = head;
+    while ((head != NULL) && (strcmp(head->vertice, geocodigo)) != 0)
+        head = head->next;
+    if (head == NULL)
+        return;
+    // return 0;
+    else
+    {
+        // // problema, estamos a mexer na linked list principal, contudo apenas no id do veiculo dentro desta funcao,
+        // // podemos aplicar alteracao, se nao considerarmos nada relevante dos valores principais contudo.. ns..
+        // Meios_t *newNode = (Meios_t *)malloc(sizeof(Meios_t));
+        // newNode->CodeID = CodeID;
+        // newNode->next = head->meios;
+        // head->meios = newNode;
+        // // return 1;
+
+        
+    }
+}
+
+
+//add vertex
+int criarVertice(Grafo_t **head, char V[])
+{
+    Grafo_t *newNode = (Grafo_t *)malloc(sizeof(Grafo_t));
+    if (!existeVertice(*head, V))
+    {
+        if (newNode != NULL)
+        {
+            strcpy(newNode->vertice, V);
+            newNode->meios = NULL;
+            newNode->next = *head;
+            *head = newNode;
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        printf("Vertice Existe");
+        return -1;
+    }
+}
+
+//check if vertex exists
+// funcao verificar se vertice existe, parecido com exiteMeio.
+int existeVertice(Grafo_t *head, char V[])
+{
+    // Grafo_t *temp ;
+    while (head != NULL)
+    {
+        if (strcmp(head->vertice, V) == 0)
+        {
+            return 1; // vertice exists
+        }
+        head = head->next;
+    }
+    return 0; // vertice does not exist
+}
+
+// Experimental implementation, adding function as procedure:
+void criarEdge(Grafo_t **head, char vOrigem[], char vDestino[], float peso)
+{
+    Adjacentes_t *newNode = (Adjacentes_t *)malloc(sizeof(Adjacentes_t));
+    if (existeVertice(*head, vOrigem) && existeVertice(*head, vDestino))
+    {
+        Grafo_t *temp = *head;
+        while (strcmp(temp->vertice, vOrigem) != 0)
+            temp = temp->next;
+        if (newNode != NULL)
+        {
+            // Grafo_t *temp = *head;
+            strcpy(newNode->vertice, vDestino);
+            newNode->peso = peso;
+            newNode->next = temp->adjacents;
+            temp->adjacents = newNode;
+        }
+        else
+            return;
+    }
+    else
+    {
+        printf("vertices ñ existem..");
+        return;
+    }
+}
+// Experimental------------------------------------------
+
+// função listar adjacentes, coordernadas do grafo.
+void listarEdges(Grafo_t *head, char vertice[])
+{
+    Adjacentes_t *aux;
+    if (existeVertice(head, vertice) != 0)
+    {
+        while (strcmp(head->vertice, vertice))
+            head = head->next;
+        aux = head->adjacents;
+        while (aux != NULL)
+        {
+            printf("Adjacente:%s Peso:%.2f\n", aux->vertice, aux->peso);
+            aux = aux->next;
+        }
+    }
+}
+
+
+inputs i have to my linked list, nothing major.
+
+//1-print link list
+printing type: carro    printing the CodeID: 1234       printing batery: 123.00 printing autonomia: 111.00
+----------x------------
+printing type: 123      printing the CodeID: 123        printing batery: 123.00 printing autonomia: 123.00
+----------x------------
+printing type: camionete        printing the CodeID: 123445     printing batery: 123.00 printing autonomia: 12.00
+//2-add vertex
+//3-add edges
+
+//4-list edges
+Vertices adjacentes a abc.def.ghi
+Adjacente:abc.def.ghi Peso:3.00
+Adjacente:bc.def.hi Peso:1.00
+Adjacente:bc.def.ghi Peso:11.00
+Segmentation fault (core dumped)
