@@ -21,260 +21,133 @@ R: em principio serão todos linked lists
  *
  */
 
-#include "DBmeios.h"
+#include "DB.h"
 
 /**
  * @brief main function, contains the following functions
  * @return int
  */
+
+void adminMenu()
+{
+    printf("\nAdmin Menu:\n");
+    printf("1. Manage gestor list\n");
+    printf("2. Manage meios list\n");
+    printf("3. Exit to main menu\n");
+    printf("Enter your choice: ");
+}
+
+int InvalidLogin(AdminUser_t *head, char *gestor, int codename)
+{
+    AdminUser_t *temp = head;
+    while (temp != NULL)
+    {
+        if (strcmp(temp->name, gestor) == 0 && codename == temp->codename)
+        {
+            // ConfirmLogIN(head, gestor, codename); // Confirmar qual o utilizdor.
+            return 1;
+        }
+        temp = temp->next;
+    }
+    return 0;
+}
+
 int main()
 {
-    Meios_t *head = NULL;
-    Grafo_t *headGraph = NULL;
+    /*
+    Gestor: tera acesso a alterar dados: veiculo, gestor e cliente.
+    cliente: Podera em principio so poder mexer nos seus dados e consultar meios..
+    */
+    AdminUser_t *headAdmins = NULL;
+    Clientes_t *headCliente = NULL;
+    Meios_t *headMeios = NULL;
+    Grafo_t *headGrafo = NULL;
 
-    char tipo[50];
-    int CodeID;
-    float bateria, autonomia;
+    int tipo = 0;
+    int codename;
+    char gestor[15]; // TAM = 50, do DB.h
 
-    int opcao; //, tipo_user;
+    // // redundante, mas menos confuso..
+    // int ID;
+    // char Cliente[15];
 
-    while (1)
+    int exitProgram = 0; // Flag to determine whether to exit the program
+    int opcao;
+    int continua = 1;
+    // Pre-execution, data serialization:
+    deserialize_Admins(&headAdmins);
+    deserialize_Cliente(&headCliente);
+
+    while (continua) // enquanto continua = 1
     {
-
-        // system("clear");
-        printf("selecione a sua opção: [0->inserir_meio/1->VerListaPMeio/2->ViewFromFile/3->SaveToFile/4->RemoveMeio");
-        printf("/5->ModifyMeioData/6->RegistarAluguerMeio/7->ListarMeiosAlugados/8->PrintOrdemDecrescente/");
-        printf("9->AddVertice/10->AddEdge/11->ListarEdges/12->AddMeios_Geocode/13->listarMeios_Geocode/20->sair]\n");
-        printf("op:");
-        scanf("%d", &opcao);
-
-        switch (opcao)
+        exitProgram = 0;
+        // Summiting Admin blocks
+        printf("Prompt User/Admin,");
+        printf("Qual e o seu tipo de utilizador: ");
+        scanf("%d", &tipo);
+        if (tipo == 1) // Gestor
         {
-        case 0: // adding and auto serialization
-        {
-            /**
-             * @brief user input functions
-             *
-             */
-            system("clear");
-            printf("enter vehicle ID:");
-            scanf("%d", &CodeID);
-            printf("enter vehicle type:");
-            scanf("%s", tipo);
-            printf("enter the amount of batery resting: ");
-            scanf("%f", &bateria);
-            printf("enter what autonomy will it have: ");
-            scanf("%f", &autonomia);
+            printf("Insira o nome do gestor:");
+            scanf("%s", gestor);
+            printf("insira id do gestor: ");
+            scanf("%d", &codename);
 
-            /**
-             * @brief Construct a new insertMeio object and store to link list
-             *
-             */
-            head = insertMeio(&head, tipo, CodeID, bateria, autonomia);
+            // WIP:insert login
+            if (!InvalidLogin(headAdmins, gestor, codename))
+            {
+                printf("Invalid Login, Exiting to main menu.");
+                exitProgram = 1;
+            }
 
-            // /**
-            //  * @brief Construct a new Confirm Log I N object
-            //  *
-            //  */
-            // ConfirmLogIN(head, name, codename); // passing procedure to confirm if user logged in
-            // /**
-            //  * @brief Construct a new serialize object
-            //  *
-            //  */
-            // serialize(head); // call for serialize funtion
-            printf("\n");
-            break;
+            while (!exitProgram)
+            {
+                printf("\nO que deseja fazer?\n");
+                adminMenu();
+                scanf("%d", &opcao);
+                switch (opcao)
+                {
+                case 1: // Entering admin menu
+                {
+                    LoopAdminsProcedure(headAdmins); // gerir dados do gestor
+                    break;
+                }
+                case 2: // Entering meios menu
+                {
+                    // WIP
+                    LoopMeiosProcedure(headMeios, headGrafo);
+                    break;
+                }
+                case 3:
+                {
+                    system("clear");
+                    printf("Returning to the main menu\n");
+                    exitProgram = 1;
+                    break;
+                }
+
+                default:
+                    system("clear");
+                    printf("Error:Invalid Option");
+                    break;
+                }
+            }
         }
-
-        case 1:
-        {
-            system("clear");
-            /**
-             * @brief Construct a new print List object
-             *
-             */
-            printList(head);
-            break;
-        }
-
-        case 2: // Read files data
-        {
-            system("clear");
-            /**
-             * @brief Construct a new deserialize object
-             *
-             */
-            deserialize(&head);
-            break;
-        }
-
-        case 3:
-        {
-            system("clear");
-            /**
-             * @brief Construct a new serialize object
-             *
-             */
-            serialize(head); // serialize at runtime whithout adding new user
-            break;
-        }
-
-        case 4:
-        {
-            system("clear");
-            printf("remover o meio:\n");
-            printf("insira o codigo do veiculo:");
-            scanf("%d", &CodeID);
-            /**
-             * @brief call the delete funtion and store to linked list
-             *
-             */
-            head = deleteMeio(head, CodeID);
-            break;
-        }
-
-        case 5:
-        {
-            system("clear");
-            printf("funcao modificar data do Meio:\n");
-            printf("insira o codigo/ID do meio: ");
-            scanf("%d", &CodeID);
-            printf("\ninsira tipo: ");
-            scanf("%s", tipo);
-            printf("\ninsira nova bateria: ");
-            scanf("%f", &bateria);
-            printf("\ninsira nova autonomia: ");
-            scanf("%f", &autonomia);
-            ModMeio(&head, tipo, CodeID, bateria, autonomia);
-            break;
-        }
-
-        case 6: // Registering meios
-        {
-            system("clear");
-            // head->RegistoAlugado = RegistoAluguelMeio(head, CodeID); // updating registo aqui!!
-            printf("insira um codigo/ID para fazer o registo :");
-            scanf("%d", &CodeID);
-            RegistoAluguelMeio(head, CodeID);
-            printf("\n");
-            printf("\n");
-            break;
-        }
-
-        case 7: // Ver Alugados
-        {
-            system("clear");
-            PrintListaMeiosAlugados(head);
-            printf("\n");
-            printf("\n");
-            break;
-        }
-
-        case 8:
-        {
-            system("clear");
-            head = PrintOrdemDecrescente(head);
-            // PrintOrdemDecrescente(head);
-            printf("\n");
-            printf("\n");
-            break;
-        }
-
-        // Funcao temporaria criar vertice, nao funciona by default..
-        case 9:
-        {
-            system("clear");
-            // int valor = criarVertice(&headGraph, "abc.def.ghi");
-            // printf("retorno vertice: %d", valor);
-            // valor = criarVertice(&headGraph, "abc.def.ghi");
-            // printf("retorno vertice: %d", valor);
-            criarVertice(&headGraph, "abc.def.ghi"); // cria v1, em teoria passamos o apontador da lista(g)
-                                                     // e o vertice que no caso sera um sitio na cidade
-            criarVertice(&headGraph, "bc.def.ghi");  // cria v2
-            criarVertice(&headGraph, "bc.def.hi");   // cria v3
-            printf("\n");
-            printf("\n");
-            break;
-        }
-            // Experimental---------X-------------
-
-        case 10:
-        {
-            system("clear");
-            // criarEdge(headGraph, "abc.def.ghi", "jkl.mno.pqr", 11);
-            criarEdge(&headGraph, "abc.def.ghi", "bc.def.ghi", 11); // cria a1(needs criarVertice Params to continue)
-                                                                    // o que e?-Aresta e a coneccao de um vertice ao outro
-                                                                    // Parametros:
-                                                                    // g-> head
-                                                                    //"abc.def.ghi"-> vOrigem
-                                                                    //"bc.def.ghi"-> vDestino
-                                                                    // 11-> peso, extra dado, julgo..
-            criarEdge(&headGraph, "abc.def.ghi", "bc.def.hi", 1);   // cria a2, muda destino
-            criarEdge(&headGraph, "abc.def.ghi", "abc.def.ghi", 3);
-            printf("\n");
-            printf("\n");
-            break;
-        }
-
-        case 11:
-        {
-            system("clear");
-            printf("Vertices adjacentes a abc.def.ghi\n");
-            listarEdges(headGraph, "abc.def.ghi");
-            printf("\n");
-            printf("\n");
-
-            break;
-        }
-            // Adicionar meios por geocodigo.
-        case 12:
-        {
-            system("clear");
-            printf("adicionar meios por geocodigo..");
-            inserirMeio_GeoCode(headGraph, "abc.def.ghi", 1234);
-            inserirMeio_GeoCode(headGraph, "abc.def.ghi", 123);
-            inserirMeio_GeoCode(headGraph, "bc.def.ghi", 123445);
-            printf("\nfeito");
-            printf("\n");
-            printf("\n");
-            break;
-        }
-        // listar meios por geocodigo
-        case 13:
-        {
-            system("clear");
-            printf("funcao listar meios por geocodigo");
-            printf("\n");
-            printf("\n");
-            listMeios_Geocode(headGraph, "abc.def.ghi");
-            printf("\n");
-            listMeios_Geocode(headGraph, "bc.def.ghi");
-            printf("\n");
-            break;
-        }
-        case 20:
-        {
-            system("clear");
-            printf("\n"); //
-            /**
-             * @brief Construct a new Free Mem object
-             *
-             */
-            FreeMem(&head); // funcção liberar apontadores à memoria
-            printf("-->saiu do programa\n");
-            return 0;
-            break;
-        } // end of case 1
-
-        /**
-         * @brief default state, exiting the switch case going to while loop
-         *
-         */
-        default:
-            system("clear");
-            printf("Error:Invalid Option");
-        }
+        // else if (tipo == 2)
+        // {
+        //     printf("Insira o nome do gestor:");
+        //     scanf("%s", Cliente);
+        //     printf("insira id do gestor: ");
+        //     scanf("%d", &ID);
+        // }
+        printf("deseja continuar?");
+        scanf("%d", &continua);
+        if (!continua)
+            printf("a sair do main menu\n");
     }
+    // LoopAdminsProcedure(head);
 
+    // Summiting meios blocks
+    // LoopMeiosProcedure();
+    printf("a sair do programa..");
     return 0;
 }

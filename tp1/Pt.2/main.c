@@ -23,6 +23,7 @@ R: em principio serão todos linked lists
 
 #include "DBmeios.h"
 
+#define STRING_SIZE 10
 /**
  * @brief main function, contains the following functions
  * @return int
@@ -40,8 +41,11 @@ int main()
 
     while (1)
     {
-
+        char user[STRING_SIZE];
         // system("clear");
+        /*a trabalhar na parte do login:*/
+        printf("função login: Entrar como gestor ou cliente?");
+
         printf("selecione a sua opção: [0->inserir_meio/1->VerListaPMeio/2->ViewFromFile/3->SaveToFile/4->RemoveMeio");
         printf("/5->ModifyMeioData/6->RegistarAluguerMeio/7->ListarMeiosAlugados/8->PrintOrdemDecrescente/");
         printf("9->AddVertice/10->AddEdge/11->ListarEdges/12->AddMeios_Geocode/13->listarMeios_Geocode/20->sair]\n");
