@@ -89,7 +89,8 @@ int criarVertice(Grafo_t **head, char V[])
         if (newNode != NULL)
         {
             strcpy(newNode->vertice, V);
-            newNode->meios = NULL;
+            newNode->meios = NULL;//Important as pointer if not initialized and set to null will segfault
+            newNode->adjacents = NULL;//Important as pointer if not initialized and set to null will segfault
             newNode->next = *head;
             *head = newNode;
             return 1;
@@ -171,40 +172,71 @@ void criarEdge(Grafo_t **head, char vOrigem[], char vDestino[], float peso)
         return;
     }
 }
-// Experimental------------------------------------------
 
-// // função listar adjacentes, coordernadas do grafo.
-// void listarEdges(Grafo_t *head, char vertice[])
-// {
-//     Adjacentes_t *aux;
-//     if (existeVertice(head, vertice) != 0)
-//     {
-//         while (strcmp(head->vertice, vertice))
-//             head = head->next;
-//         aux = head->adjacents;
-//         while (aux != NULL)
-//         {
-//             printf("Adjacente:%s Peso:%.2f\n", aux->vertice, aux->peso);
-//             aux = aux->next;
-//         }
+// void criarEdge(Grafo_t **head, char vOrigem[], char vDestino[], float peso) {
+//     if (!existeVertice(*head, vOrigem) || !existeVertice(*head, vDestino)) {
+//         printf("Vertices do not exist.\n");
+//         return;
 //     }
+
+//     Grafo_t *temp = *head;
+//     while (strcmp(temp->vertice, vOrigem) != 0)
+//         temp = temp->next;
+
+//     Adjacentes_t *newNode = (Adjacentes_t *)malloc(sizeof(Adjacentes_t));
+//     if (newNode == NULL) {
+//         printf("Error: Failed to allocate memory for Adjacentes_t node.\n");
+//         return;
+//     }
+
+//     strcpy(newNode->vertice, vDestino);
+//     newNode->peso = peso;
+//     newNode->next = temp->adjacents;
+//     temp->adjacents = newNode;
 // }
+
+// Experimental------------------------------------------
 
 void listarEdges(Grafo_t *head, char vertice[])
 {
     Adjacentes_t *aux;
     while (head != NULL)
     {
+        printf("Vertex: %s\n", head->vertice);
         aux = head->adjacents;
-        while (aux != NULL)
+        if (aux == NULL)
         {
-            printf("Adjacente:%s Peso:%.2f\n", aux->vertice, aux->peso);
-            aux = aux->next;
+            printf("  No edges\n");
         }
-        return;
+        else
+        {
+            printf("Adjacentes:\n");
+            while (aux != NULL)
+            {
+                printf("Destino:%s, Peso:%.2f\n", aux->vertice, aux->peso);
+                aux = aux->next;
+            }
+        }
+        head = head->next;
     }
-    head = head->next;
 }
+
+// void listarEdges(Grafo_t *head, char vertice[])
+// {
+//     Adjacentes_t *aux;
+//     while (head != NULL)
+//     {
+//         aux = head->adjacents;
+//         while (aux != NULL)
+//         {
+//             printf("Adjacente:%s Peso:%.2f\n", aux->vertice, aux->peso);
+//             aux = aux->next;
+//         }
+//         return;
+//     }
+//     head = head->next;
+// }
+
 /*
 void inserirMeio_GeoCode(Grafo_t *head, char geocodigo[], int CodeID)
 {
@@ -273,23 +305,6 @@ void listMeios_Geocode(Grafo_t *head, char geocodigo[])
     else
         printf("geocodigo inesistente");
 }
-
-
-// void listMeios_Geocode(Grafo_t *head, char geocodigo[])
-// {
-//     Meios_t *aux = head->meios;
-//     if (aux == NULL)
-//     {
-//         printf("sem meios de transporte");
-//         return;
-//     }
-//     else
-//         while (head != NULL)
-//         {
-
-//             head = head->next;
-//         }
-// }
 
 // /*
 //  * @brief procedure to do confirm the user login

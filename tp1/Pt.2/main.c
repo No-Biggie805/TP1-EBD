@@ -41,7 +41,7 @@ int main()
 
     while (1)
     {
-        char user[STRING_SIZE];
+        // char user[STRING_SIZE];
         // system("clear");
         /*a trabalhar na parte do login:*/
         printf("função login: Entrar como gestor ou cliente?");
